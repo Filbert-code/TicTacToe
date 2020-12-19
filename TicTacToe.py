@@ -6,6 +6,7 @@ class TicTacToe:
         self.gameboard = GameBoard()
         self.x_pos = []
         self.o_pos = []
+        self.playersTurn = 0
 
     # pos will be a number in range (0-8), we know the position given is valid
     def playMove(self, pos, symbol):
@@ -43,32 +44,29 @@ class TicTacToe:
                         return True
         return False
 
+    def nextTurn(self, symbol):
+        pos = int(input("What is your move? "))
+        if(self.checkMove(pos)):
+            self.playMove(pos, symbol)
+            print(self.x_pos)
+            if(self.winner()):
+                print()
+                self.gameboard.printBoard()
+                print(symbol + ' won!')
+                exit()
+            self.playersTurn += 1
+
     def startGame(self):
-        playersTurn = 0
         running = True
         while(running):
             self.gameboard.printBoard()
             print()
             # X's turn
-            if(playersTurn % 2 == 0):
-                pos = int(input("What is your move? "))
-                if(self.checkMove(pos)):
-                    self.playMove(pos, 'X')
-                    print(self.x_pos)
-                    if(self.winner()):
-                        print('X won!')
-                        exit()
-                    playersTurn += 1
+            if(self.playersTurn % 2 == 0):
+                self.nextTurn('X')
             # O's turn
             else:
-                pos = int(input("What is your move? "))
-                if(self.checkMove(pos)):
-                    self.playMove(pos, 'O')
-                    print(self.o_pos)
-                    if(self.winner()):
-                        print('O won!')
-                        exit()
-                    playersTurn += 1
+                self.nextTurn('O')
             print()
 
 
