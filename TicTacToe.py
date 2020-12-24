@@ -8,7 +8,6 @@ class TicTacToe:
         self.gameboard = GameBoard()
         self.x_pos = [] # positions marked by player X
         self.o_pos = [] # positions marked by player O
-        #self.playersTurn = 0 # used to keep track of who's turn it is for human players
 
     # updates the GameBoard's 2D array to include the player's new move
     def playMove(self, pos, symbol):
@@ -17,11 +16,7 @@ class TicTacToe:
         # update the board with the new move
         self.gameboard.board[positions[0]][positions[1]] = symbol
         # track the position (0-8) that has now been taken for each player
-        if(symbol == 'X'):
-            self.x_pos.append(pos)
-        else:
-            self.o_pos.append(pos)
-
+        self.x_pos.append(pos) if symbol == 'X' else self.o_pos.append(pos)
 
     # returns true if the move is possible to make
     def checkMove(self, pos):
@@ -31,14 +26,13 @@ class TicTacToe:
         return True
 
     # checks if each player's chosen positions constitutes a win or not
-    def winner(self, x_pos, o_pos):
+    def evaluate(self, x_pos, o_pos):
         # all possible winning sets
         wins = [[0,1,2],[3,4,5],[6,7,8],
                 [0,3,6],[1,4,7],[2,5,8],
                 [0,4,8],[2,4,6]]
         for positions in wins:
-            x_count = 0
-            o_count = 0
+            x_count, o_count = 0, 0
             for pos in positions:
                 # if either count variable reaches 3, then a winning set has been
                 # matched and the corresponding player is the winner
@@ -63,34 +57,27 @@ class TicTacToe:
             # updates the GameBoard
             self.playMove(pos, 'X')
             # true if either player is found to have won the game
-            if(self.winner(self.x_pos, self.o_pos)):
-                print()
-                self.gameboard.printBoard()
-                print('Player won!')
-                exit()
-            if(not self.isMovesLeft(self.x_pos, self.o_pos)):
-                print()
-                self.gameboard.printBoard()
-                print('It\'s a tie!')
-                exit()
+            self.winner('The player')
 
             print()
             self.gameboard.printBoard()
-            print('Computer\'s move...')
-            print()
+            print('\nComputer\'s move...\n')
 
             computer_move = self.findBestMove()
             self.playMove(computer_move, 'O')
-            if(self.winner(self.x_pos, self.o_pos)):
-                print()
-                self.gameboard.printBoard()
-                print('Computer won!')
-                exit()
-            if(not self.isMovesLeft(self.x_pos, self.o_pos)):
-                print()
-                self.gameboard.printBoard()
-                print('It\'s a tie!')
-                exit()
+            self.winner('The computer')
+
+    def winner(self, winner):
+        if(self.evaluate(self.x_pos, self.o_pos)):
+            print()
+            self.gameboard.printBoard()
+            print('{} won!'.format(winner))
+            exit()
+        if(not self.isMovesLeft(self.x_pos, self.o_pos)):
+            print()
+            self.gameboard.printBoard()
+            print('It\'s a tie!')
+            exit()
 
     # returns true if there are moves left, returns false otherwise
     def isMovesLeft(self, x_pos, o_pos):
@@ -100,23 +87,20 @@ class TicTacToe:
         bestVal = math.inf
         # the move with the highest score returned at the end of the function
         bestMove = 10
-        # save the current game state
-        x_pos_copy = self.x_pos
-        o_pos_copy = self.o_pos
         for pos_index, pos in enumerate(self.gameboard.move_positions):
             # true if the checked position is empty
             pos_sign = self.gameboard.board[pos[0]][pos[1]]
             if(pos_sign != 'X' and pos_sign != 'O'):
                 # make the move
                 self.gameboard.board[pos[0]][pos[1]] = 'O'
-                o_pos_copy.append(pos_index)
+                self.o_pos.append(pos_index)
                 # find the evaluation number for the move
-                moveVal = self.minimax(x_pos_copy, o_pos_copy, 0, True)
+                moveVal = self.minimax(self.x_pos, self.o_pos, 0, True)
                 print("Move: "+ str(pos_index) + ", moveVal: " + str(moveVal), end=', ')
 
                 # undo the move
                 self.gameboard.board[pos[0]][pos[1]] = str(pos_sign)
-                o_pos_copy.remove(pos_index)
+                self.o_pos.remove(pos_index)
                 # update the best move and highest evaluation score
                 if(moveVal < bestVal):
                     bestMove = pos_index
@@ -168,14 +152,6 @@ class TicTacToe:
                     self.gameboard.board[pos[0]][pos[1]] = str(pos_sign)
             return best
 
-    def evaluate(self, x_pos, o_pos):
-        if(self.winner(x_pos, o_pos) == 10):
-            return 10
-        elif(self.winner(x_pos, o_pos) == -10):
-            return -10
-        else:
-            return 999
-
     # mainloop for the game
     def startGame(self):
         running = True
@@ -183,19 +159,6 @@ class TicTacToe:
             # outputs the current state of the board to the console
             self.gameboard.printBoard()
             print()
-            # x = [1,4,5]
-            # o = [3,7]
-            # for move in x:
-            #     self.playMove(move, 'X')
-            # for move in o:
-            #     self.playMove(move, 'O')
-            # self.gameboard.printBoard()
-            # user = input()
-            # self.findBestMove()
-            # user_choice = input("What to do? ")
-            # if(user_choice == 'done'):
-            #     exit()
-            # even numbers are X's turn, odd are O's turn
             self.nextTurn()
             print()
 
