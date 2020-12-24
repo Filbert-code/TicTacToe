@@ -51,6 +51,13 @@ class TicTacToe:
                         return True
         return False
 
+    # checks if the game is a tie
+    def tie(self):
+        # count the number of positions marked by both players, 9 equals a tie
+        if(len(self.x_pos) + len(self.o_pos) == 9):
+            return True
+        return False
+
     # captures the user's choice, validates and updates the GameBoard. A winner is
     # determined if 3 of either user's chosen positions matches any of the winning
     # sets
@@ -67,6 +74,11 @@ class TicTacToe:
                 print()
                 self.gameboard.printBoard()
                 print(symbol + ' won!')
+                exit()
+            if(self.tie()):
+                print()
+                self.gameboard.printBoard()
+                print('It\'s a tie!')
                 exit()
             self.playersTurn += 1
 
