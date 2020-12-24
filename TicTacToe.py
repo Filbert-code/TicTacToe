@@ -14,8 +14,6 @@ class TicTacToe:
     # determined if 3 of either user's chosen positions matches any of the winning
     # sets
     def playerTurn(self, symbol):
-        self.gameboard.printBoard()
-        print()
         # capture user input
         pos = int(input("What is your move? "))
         # validate user's input
@@ -25,10 +23,14 @@ class TicTacToe:
             # true if either player is found to have won the game
             self.winner('The player')
 
+    # the computer's turn to play a move, if the computer goes first, it will
+    # pick a random starting position
     def compNextTurn(self, symbol):
-
+        # function that calls the Minimax algorithm to find the best move
         computer_move = self.findBestMove(False)
+        # updates the GameBoard
         self.playMove(computer_move, symbol)
+        # true if the computer wins
         self.winner('The computer')
         print()
         self.gameboard.printBoard()
@@ -43,7 +45,7 @@ class TicTacToe:
         # track the position (0-8) that has now been taken for each player
         self.x_pos.append(pos) if symbol == 'X' else self.o_pos.append(pos)
 
-    # returns true if the move is possible to make
+    # returns true if the move is possible to make, boundary error checks
     def checkMove(self, pos):
         if((pos > 8 or pos < 0) or (pos in (self.x_pos + self.o_pos))):
             print('You entered an invalid move, try again.')
@@ -54,6 +56,7 @@ class TicTacToe:
     def isMovesLeft(self, x_pos, o_pos):
         return True if (9 - (len(x_pos) + len(o_pos)) > 0) else False
 
+    # prints to the command line the end-state of the game and exits the game
     def winner(self, winner):
         if(self.evaluate(self.x_pos, self.o_pos)):
             print()
@@ -66,20 +69,24 @@ class TicTacToe:
             print('It\'s a tie!')
             exit()
 
+    # returns the best move for the computer found using a backtracking
+    # algorithm called Minimax.
     def findBestMove(self, playerFirst):
+        # computer's symbol
         symbol = 'X' if not playerFirst else 'O'
-
+        # variable for helping to find the best evaluation score
         bestVal = -math.inf if not playerFirst else math.inf
-        # the move with the highest score returned at the end of the function
+        # a list to help randomize the best move selection
         bestMoves = []
-        bestMove = 10
+        # the move with the highest score returned at the end of the function
+        bestMove = 10 # 10 will be overridden
         for pos_index, pos in enumerate(self.gameboard.move_positions):
-            # true if the checked position is empty
+            # check if the position is empty
             pos_sign = self.gameboard.board[pos[0]][pos[1]]
             if(pos_sign != 'X' and pos_sign != 'O'):
                 # make the move
                 self.gameboard.board[pos[0]][pos[1]] = symbol
-
+                # add the move to the corresponding position list
                 self.o_pos.append(pos_index) if playerFirst else self.x_pos.append(pos_index)
                 # find the evaluation number for the move
                 moveVal = self.minimax(self.x_pos, self.o_pos, 0, playerFirst)
@@ -87,33 +94,32 @@ class TicTacToe:
 
                 # undo the move
                 self.gameboard.board[pos[0]][pos[1]] = str(pos_sign)
+                # remove the move to the corresponding position list
                 self.o_pos.remove(pos_index) if playerFirst else self.x_pos.remove(pos_index)
                 # update the best move and highest evaluation score
                 if((moveVal, pos_index) not in bestMoves):
                     bestMoves.append((moveVal, pos_index))
-
+                # update the best evaluation (bestVal) and the corresponding position (bestMove)
                 if (playerFirst and moveVal < bestVal):
                     bestMove, bestVal = pos_index, moveVal
                 if (not playerFirst and moveVal > bestVal):
                     bestMove, bestVal = pos_index, moveVal
-
                 print("bestMove: " + str(bestMove))
         # creates random moves if there are multiple best evaluations
         bestMove = self.randomMax(bestVal, bestMoves)
         print('The best move is {}'.format(bestMove))
         return bestMove
 
+    # returns a random maximum value from the given list
     def randomMax(self, maxVal, list):
         # a list of all the moves that have the best evaluation scores
         maxMoves = [value for value in list if value[0]==maxVal]
-        print('maxMoves: ', end=' ')
-        print(maxMoves)
         return random.choice(maxMoves)[1]
 
     def minimax(self, x_pos, o_pos, depth, isMax):
-
+        # the evaluation score
         score = self.evaluate(x_pos, o_pos)
-
+        # recursive base-case
         if(score == 10):
             return score - depth
         if(score == -10):
@@ -132,12 +138,13 @@ class TicTacToe:
                     # make a move on the position
                     x_pos.append(pos_index)
                     self.gameboard.board[pos[0]][pos[1]] = 'X'
-
+                    # get the max value between the current best evaluation and the new one
                     best = max(best, self.minimax(x_pos, o_pos, depth+1, not isMax))
-
+                    # remove the move from the board
                     x_pos.remove(pos_index)
                     self.gameboard.board[pos[0]][pos[1]] = str(pos_sign)
             return best
+
         else:
             best = math.inf
             for pos_index, pos in enumerate(self.gameboard.move_positions):
@@ -176,16 +183,21 @@ class TicTacToe:
 
     # mainloop for the game
     def startGame(self):
-        playerFirst = True if input('Would you like to go first? (y/n)').lower()=='yes' else False
+        playerFirst = True if input('Would you like to go first? (y/n)').lower()=='y' else False
         playerSymbol = 'X' if playerFirst else 'O'
         compSymbol = 'O' if playerFirst else 'X'
+        self.gameboard.printBoard()
+        print()
         running = True
         while(running):
+
             if(playerFirst):
-                self.playerTurn(playerSymbol)
+                self.compNextTurn(playerSymbol)
                 self.compNextTurn(compSymbol)
+            else:
+                self.compNextTurn(compSymbol)
+                self.playerTurn(playerSymbol)
 
-
-
-taccy = TicTacToe()
-taccy.startGame()
+if __name__ == "__main__":
+    taccy = TicTacToe()
+    taccy.startGame()
