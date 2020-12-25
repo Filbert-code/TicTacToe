@@ -1,3 +1,5 @@
+import os
+window_length = os.get_terminal_size().columns
 class GameBoard:
 
     def __init__(self):
@@ -33,5 +35,8 @@ class GameBoard:
             count += 1
 
     def printBoard(self):
+        print('========================='.center(window_length))
         for row in self.board:
-            print(''.join(row))
+            rowStr = '||  '+''.join(row) + '  ||'
+            print(rowStr.center(window_length))
+        print('========================='.center(window_length))

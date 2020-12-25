@@ -1,6 +1,7 @@
 from GameBoard import GameBoard
 import math
 import random
+import os
 
 class TicTacToe:
     # constructor
@@ -181,9 +182,20 @@ class TicTacToe:
                         return -10
         return False
 
+    def welcome(self):
+        os.system('cls')
+        window_length = os.get_terminal_size().columns
+        myStr = ''
+        for i in range(int(window_length)):
+            myStr = myStr + ' '
+        print('========================='.center(window_length))
+        print('=======TIC-TAC-TOE======='.center(window_length))
+        self.gameboard.printBoard()
+
     # mainloop for the game
     def startGame(self):
-        playerFirst = True if input('Would you like to go first? (y/n)').lower()=='y' else False
+        self.welcome()
+        playerFirst = True if input('Would you like to go first? (y/n) ').lower()=='y' else False
         playerSymbol = 'X' if playerFirst else 'O'
         compSymbol = 'O' if playerFirst else 'X'
         self.gameboard.printBoard()
