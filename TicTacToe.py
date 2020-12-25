@@ -2,6 +2,7 @@ from GameBoard import GameBoard
 import math
 import random
 import os
+window_length = os.get_terminal_size().columns
 
 class TicTacToe:
     # constructor
@@ -16,7 +17,8 @@ class TicTacToe:
     # sets
     def playerTurn(self, symbol):
         # capture user input
-        pos = int(input("What is your move? "))
+        pos = int(input(''.join([' ' for item in range(int(window_length/2)-11)])+'What is your move? '))
+        #pos = int(input("What is your move? "))
         # validate user's input
         if(self.checkMove(pos)):
             # updates the GameBoard
@@ -35,7 +37,9 @@ class TicTacToe:
         self.winner('The computer')
         print()
         self.gameboard.printBoard()
-        print('\nComputer\'s move...\n')
+        print()
+        comp_move = 'Computer\'s move...' + str(computer_move) + '\n'
+        print(comp_move.center(window_length))
 
     # updates the GameBoard's 2D array to include the player's new move
     def playMove(self, pos, symbol):
@@ -49,7 +53,7 @@ class TicTacToe:
     # returns true if the move is possible to make, boundary error checks
     def checkMove(self, pos):
         if((pos > 8 or pos < 0) or (pos in (self.x_pos + self.o_pos))):
-            print('You entered an invalid move, try again.')
+            print('You entered an invalid move, try again.'.center(window_length))
             return False
         return True
 
@@ -62,12 +66,12 @@ class TicTacToe:
         if(self.evaluate(self.x_pos, self.o_pos)):
             print()
             self.gameboard.printBoard()
-            print('{} won!'.format(winner))
+            print('{} won!'.format(winner).center(window_length))
             exit()
         if(not self.isMovesLeft(self.x_pos, self.o_pos)):
             print()
             self.gameboard.printBoard()
-            print('It\'s a tie!')
+            print('It\'s a tie!'.center(window_length))
             exit()
 
     # returns the best move for the computer found using a backtracking
@@ -81,6 +85,7 @@ class TicTacToe:
         bestMoves = []
         # the move with the highest score returned at the end of the function
         bestMove = 10 # 10 will be overridden
+        print('--------------\nAI Evaluations\n--------------')
         for pos_index, pos in enumerate(self.gameboard.move_positions):
             # check if the position is empty
             pos_sign = self.gameboard.board[pos[0]][pos[1]]
@@ -184,10 +189,6 @@ class TicTacToe:
 
     def welcome(self):
         os.system('cls')
-        window_length = os.get_terminal_size().columns
-        myStr = ''
-        for i in range(int(window_length)):
-            myStr = myStr + ' '
         print('========================='.center(window_length))
         print('=======TIC-TAC-TOE======='.center(window_length))
         self.gameboard.printBoard()
@@ -195,16 +196,17 @@ class TicTacToe:
     # mainloop for the game
     def startGame(self):
         self.welcome()
-        playerFirst = True if input('Would you like to go first? (y/n) ').lower()=='y' else False
+        print('Would you like to go first?'.center(window_length))
+
+        playerFirst = True if input(''.join([' ' for item in range(int(window_length/2)-4)])+'(y/n): ').lower()=='y' else False
         playerSymbol = 'X' if playerFirst else 'O'
         compSymbol = 'O' if playerFirst else 'X'
-        self.gameboard.printBoard()
         print()
         running = True
         while(running):
 
             if(playerFirst):
-                self.compNextTurn(playerSymbol)
+                self.playerTurn(playerSymbol)
                 self.compNextTurn(compSymbol)
             else:
                 self.compNextTurn(compSymbol)
