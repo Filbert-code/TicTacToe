@@ -62,17 +62,17 @@ class TicTacToe:
         return True
 
     # returns true if there are moves left, returns false otherwise
-    def isMovesLeft(self, x_pos, o_pos):
-        return True if (9 - (len(x_pos) + len(o_pos)) > 0) else False
+    def isMovesLeft(self, gameboard):
+        return True if (9 - (len(gameboard.x_pos) + len(gameboard.o_pos)) > 0) else False
 
     # prints to the command line the end-state of the game and exits the game
     def winner(self, winner):
-        if(self.evaluate(self.gameboard.x_pos, self.gameboard.o_pos)):
+        if(self.evaluate(self.gameboard)):
             print()
             self.gameboard.printBoard()
             print('{} won!'.format(winner).center(window_length))
             exit()
-        if(not self.isMovesLeft(self.gameboard.x_pos, self.gameboard.o_pos)):
+        if(not self.isMovesLeft(self.gameboard)):
             print()
             self.gameboard.printBoard()
             print('It\'s a tie!'.center(window_length))
@@ -99,7 +99,7 @@ class TicTacToe:
                 # find the evaluation number for the move
                 alpha = -math.inf
                 beta = math.inf
-                moveVal = self.minimax(self.gameboard.x_pos, self.gameboard.o_pos, 0, playerFirst, alpha, beta)
+                moveVal = self.minimax(self.gameboard, 0, playerFirst, alpha, beta)
                 print("Move: "+ str(pos_index) + ", moveVal: " + str(moveVal), end=', ')
                 # undo the move
                 self.gameboard.undoMove(pos_index, symbol)
@@ -124,58 +124,58 @@ class TicTacToe:
         maxMoves = [value for value in list if value[0]==maxVal]
         return random.choice(maxMoves)[1]
 
-    def minimax(self, x_pos, o_pos, depth, isMax, alpha, beta):
+    def minimax(self, gameboard, depth, isMax, alpha, beta):
         # the evaluation score
-        score = self.evaluate(x_pos, o_pos)
+        score = self.evaluate(gameboard)
         # recursive base-case
         if(score == 10):
             return score - depth
         if(score == -10):
             return score + depth
-        if(not self.isMovesLeft(x_pos, o_pos)):
+        if(not self.isMovesLeft(gameboard)):
             return 0
 
         if(isMax):
             best = -math.inf
             # traverse all positions: pos_index are positions (0-8) and
             # pos are the 9 corresponding position coordinates
-            for pos_index, pos in enumerate(self.gameboard.move_positions):
+            for pos_index, pos in enumerate(gameboard.move_positions):
                 # check if the position is vacant
-                pos_sign = self.gameboard.board[pos[0]][pos[1]]
+                pos_sign = gameboard.board[pos[0]][pos[1]]
                 if(pos_sign != 'X' and pos_sign != 'O'):
                     # make a move on the position
-                    x_pos.append(pos_index)
-                    self.gameboard.board[pos[0]][pos[1]] = 'X'
+                    gameboard.x_pos.append(pos_index)
+                    gameboard.board[pos[0]][pos[1]] = 'X'
                     self.num_of_searches += 1
                     # get the max value between the current best evaluation and the new one
-                    best = max(best, self.minimax(x_pos, o_pos, depth+1, not isMax, alpha, beta))
+                    best = max(best, self.minimax(gameboard, depth+1, not isMax, alpha, beta))
                     alpha = max(alpha, best)
                     # remove the move from the board
-                    x_pos.remove(pos_index)
-                    self.gameboard.board[pos[0]][pos[1]] = str(pos_sign)
+                    gameboard.x_pos.remove(pos_index)
+                    gameboard.board[pos[0]][pos[1]] = str(pos_sign)
                     if beta <= alpha:
                         break
             return best
 
         else:
             best = math.inf
-            for pos_index, pos in enumerate(self.gameboard.move_positions):
-                pos_sign = self.gameboard.board[pos[0]][pos[1]]
+            for pos_index, pos in enumerate(gameboard.move_positions):
+                pos_sign = gameboard.board[pos[0]][pos[1]]
                 if(pos_sign != 'X' and pos_sign != 'O'):
                     # make a move on the position
-                    o_pos.append(pos_index)
-                    self.gameboard.board[pos[0]][pos[1]] = 'O'
+                    gameboard.o_pos.append(pos_index)
+                    gameboard.board[pos[0]][pos[1]] = 'O'
                     self.num_of_searches += 1
-                    best = min(best, self.minimax(x_pos, o_pos, depth+1, not isMax, alpha, beta))
+                    best = min(best, self.minimax(gameboard, depth+1, not isMax, alpha, beta))
                     beta = min(beta, best)
-                    o_pos.remove(pos_index)
-                    self.gameboard.board[pos[0]][pos[1]] = str(pos_sign)
+                    gameboard.o_pos.remove(pos_index)
+                    gameboard.board[pos[0]][pos[1]] = str(pos_sign)
                     if beta <= alpha:
                         break
             return best
 
     # checks if each player's chosen positions constitutes a win or not
-    def evaluate(self, x_pos, o_pos):
+    def evaluate(self, gameboard):
         # all possible winning sets
         wins = [[0,1,2],[3,4,5],[6,7,8],
                 [0,3,6],[1,4,7],[2,5,8],
@@ -185,11 +185,11 @@ class TicTacToe:
             for pos in positions:
                 # if either count variable reaches 3, then a winning set has been
                 # matched and the corresponding player is the winner
-                if(pos in x_pos):
+                if(pos in gameboard.x_pos):
                     x_count += 1
                     if(x_count == 3):
                         return 10
-                if(pos in o_pos):
+                if(pos in gameboard.o_pos):
                     o_count += 1
                     if(o_count == 3):
                         return -10
