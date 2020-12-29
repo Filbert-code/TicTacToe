@@ -1,3 +1,6 @@
+# This class is used for visualizing the game-states of the Tic Tac Toe game.
+# A GameBoard object will be initialized in the constructor of the TicTacToe
+# class.
 import os
 window_length = os.get_terminal_size().columns
 

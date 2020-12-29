@@ -1,3 +1,6 @@
+# This class contains the gameloop of the Tic-Tac-Toe game and uses its
+# findBestMove, minimax, and evaluation functions to find the best moves
+# for the computer to make. 
 from GameBoard import GameBoard
 import math
 import random
@@ -37,8 +40,7 @@ class TicTacToe:
         else:
             self.playerTurn(symbol)
 
-    # the computer's turn to play a move, if the computer goes first, it will
-    # pick a the center square as its starting position
+    # the computer's turn to play a move
     def compNextTurn(self, symbol, playerFirst):
         # reset the number of searches
         self.num_of_searches = 0
