@@ -59,11 +59,13 @@ class TicTacToe:
         if(self.evaluate(self.gameboard)):
             print()
             self.gameboard.printBoard()
+            print()
             print('{} won!'.format(winner).center(window_length))
             exit()
         if(not self.gameboard.isMovesLeft()):
             print()
             self.gameboard.printBoard()
+            print()
             print('It\'s a tie!'.center(window_length))
             exit()
 
@@ -241,7 +243,3 @@ class TicTacToe:
             else:
                 self.compNextTurn(compSymbol, playerFirst)
                 self.playerTurn(playerSymbol)
-
-if __name__ == "__main__":
-    taccy = TicTacToe()
-    taccy.startGame()
