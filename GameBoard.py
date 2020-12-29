@@ -1,5 +1,6 @@
 import os
 window_length = os.get_terminal_size().columns
+
 class GameBoard:
     # constructor
     def __init__(self):
