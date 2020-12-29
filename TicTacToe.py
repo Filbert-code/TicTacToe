@@ -9,8 +9,6 @@ class TicTacToe:
     def __init__(self):
         # a GameBoard object that contains a 2D board array
         self.gameboard = GameBoard()
-        self.x_pos = [] # positions marked by player X
-        self.o_pos = [] # positions marked by player O
         self.num_of_searches = 0
 
     # captures the user's choice, validates and updates the GameBoard. A winner is
@@ -33,7 +31,7 @@ class TicTacToe:
         # validate user's input
         if(self.checkMove(pos)):
             # updates the GameBoard
-            self.playMove(pos, symbol)
+            self.gameboard.playMove(pos, symbol)
             # true if either player is found to have won the game
             self.winner('The player')
         else:
@@ -47,7 +45,7 @@ class TicTacToe:
         # function that calls the Minimax algorithm to find the best move
         computer_move = self.findBestMove(playerFirst)
         # updates the GameBoard
-        self.playMove(computer_move, symbol)
+        self.gameboard.playMove(computer_move, symbol)
         # true if the computer wins
         self.winner('The computer')
         print()
@@ -56,25 +54,9 @@ class TicTacToe:
         comp_move = 'Computer\'s move...' + str(computer_move) + '\n'
         print(comp_move.center(window_length))
 
-    # updates the GameBoard's 2D array to include the player's new move
-    def playMove(self, pos, symbol):
-        # row and column indices corresponding to the 9 positions of the game
-        positions = self.gameboard.move_positions[pos]
-        # update the board with the new move
-        self.gameboard.board[positions[0]][positions[1]] = symbol
-        # track the position (0-8) that has now been taken for each player
-        self.x_pos.append(pos) if symbol == 'X' else self.o_pos.append(pos)
-
-    def undoMove(self, pos, symbol):
-        # row and column indices corresponding to the 9 positions of the game
-        positions = self.gameboard.move_positions[pos]
-        # update the board with undoing the move
-        self.gameboard.board[positions[0]][positions[1]] = str(pos)
-        self.x_pos.remove(pos) if symbol == 'X' else self.o_pos.remove(pos)
-
     # returns true if the move is possible to make, boundary error checks
     def checkMove(self, pos):
-        if(not (pos <= 8 and pos >= 0) or (pos in (self.x_pos + self.o_pos))):
+        if(not (pos <= 8 and pos >= 0) or (pos in (self.gameboard.x_pos + self.gameboard.o_pos))):
             print('You entered an invalid move, try again.'.center(window_length))
             return False
         return True
@@ -85,12 +67,12 @@ class TicTacToe:
 
     # prints to the command line the end-state of the game and exits the game
     def winner(self, winner):
-        if(self.evaluate(self.x_pos, self.o_pos)):
+        if(self.evaluate(self.gameboard.x_pos, self.gameboard.o_pos)):
             print()
             self.gameboard.printBoard()
             print('{} won!'.format(winner).center(window_length))
             exit()
-        if(not self.isMovesLeft(self.x_pos, self.o_pos)):
+        if(not self.isMovesLeft(self.gameboard.x_pos, self.gameboard.o_pos)):
             print()
             self.gameboard.printBoard()
             print('It\'s a tie!'.center(window_length))
@@ -113,14 +95,14 @@ class TicTacToe:
             pos_sign = self.gameboard.board[pos[0]][pos[1]]
             if(pos_sign != 'X' and pos_sign != 'O'):
                 # make the move
-                self.playMove(pos_index, symbol)
+                self.gameboard.playMove(pos_index, symbol)
                 # find the evaluation number for the move
                 alpha = -math.inf
                 beta = math.inf
-                moveVal = self.minimax(self.x_pos, self.o_pos, 0, playerFirst, alpha, beta)
+                moveVal = self.minimax(self.gameboard.x_pos, self.gameboard.o_pos, 0, playerFirst, alpha, beta)
                 print("Move: "+ str(pos_index) + ", moveVal: " + str(moveVal), end=', ')
                 # undo the move
-                self.undoMove(pos_index, symbol)
+                self.gameboard.undoMove(pos_index, symbol)
                 # update the best move and highest evaluation score
                 if((moveVal, pos_index) not in bestMoves):
                     bestMoves.append((moveVal, pos_index))
