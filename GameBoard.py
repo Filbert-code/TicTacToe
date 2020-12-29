@@ -35,8 +35,8 @@ class GameBoard:
             count += 1
 
     def printBoard(self):
-        print('========================='.center(window_length))
+        print('====================='.center(window_length))
         for row in self.board:
-            rowStr = '||  '+''.join(row) + '  ||'
+            rowStr = '||'+''.join(row) + '||'
             print(rowStr.center(window_length))
-        print('========================='.center(window_length))
+        print('====================='.center(window_length))
