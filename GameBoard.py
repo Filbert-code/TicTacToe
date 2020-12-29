@@ -43,7 +43,9 @@ class GameBoard:
     # returns true if the move is possible to make, boundary error checks
     def checkMove(self, pos):
         if(not (pos <= 8 and pos >= 0) or (pos in (self.x_pos + self.o_pos))):
+            print()
             print('You entered an invalid move, try again.'.center(window_length))
+            print()
             return False
         return True
 

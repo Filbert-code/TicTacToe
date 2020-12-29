@@ -1,8 +1,8 @@
 from GameBoard import GameBoard
 import math
 import random
-import os
-window_length = os.get_terminal_size().columns
+from os import system, name, get_terminal_size
+window_length = get_terminal_size().columns
 
 class TicTacToe:
     # constructor
@@ -47,11 +47,11 @@ class TicTacToe:
         # updates the GameBoard
         self.gameboard.playMove(computer_move, symbol)
         # true if the computer wins
-        self.winner('The computer')
+        self.winner('SHALLOW ORANGE')
         print()
         self.gameboard.printBoard()
         print()
-        comp_move = 'Computer\'s move...' + str(computer_move) + '\n'
+        comp_move = 'ORANGE\'s move...' + str(computer_move) + '\n'
         print(comp_move.center(window_length))
 
     # prints to the command line the end-state of the game and exits the game
@@ -185,16 +185,36 @@ class TicTacToe:
         return False
 
     def welcome(self):
-        os.system('cls')
+        self.clear()
         print('====================='.center(window_length))
         print('=====TIC-TAC-TOE====='.center(window_length))
         self.gameboard.printBoard()
         print()
+        print('Welcome!'.center(window_length))
+        print()
+        print('Your computer opponent, nicknamed SHALLOW ORANGE,'.center(window_length))
+        print('has never lost a game of Tic-Tac-Toe.'.center(window_length))
+        print()
+        print('Defeating SHALLOW ORANGE will earn you the'.center(window_length))
+        print('coveted title of Tic-Tac-Toe GRANDMASTER.'.center(window_length))
+        print()
+        print('Are you up for the challange?'.center(window_length))
+        print()
+
+    # define our clear function
+    def clear(self):
+        # for windows
+        if(name == 'nt'):
+            _ = system('cls')
+        # for mac and linux
+        else:
+            _ = system('clear')
 
     # mainloop for the game
     def startGame(self):
         self.welcome()
         print('Would you like to go first?'.center(window_length))
+        print('(Enter \'computer\' to watch Shallow Orange play itself)'.center(window_length))
         # get number of characters to write at center of the CLI window
         mid_window_spaces = ''.join([' ' for item in range(int(window_length/2)-4)])
         # get player input
@@ -203,15 +223,18 @@ class TicTacToe:
         playerFirst = True if (playerInput == 'y') or (playerInput == 'yes') else False
         print()
         print('PLAYER Starts'.center(window_length)) if playerFirst else \
-                             print('COMPUTER Starts'.center(window_length))
+                             print('ORANGE Starts'.center(window_length))
         playerSymbol = 'X' if playerFirst else 'O'
         compSymbol = 'O' if playerFirst else 'X'
         print()
         # Game loop
         running = True
         while(running):
+            if(playerInput.lower() == 'computer'):
+                self.compNextTurn(playerSymbol, playerFirst)
+                self.compNextTurn(compSymbol, playerFirst)
             # player starts
-            if(playerFirst):
+            elif(playerFirst):
                 self.playerTurn(playerSymbol)
                 self.compNextTurn(compSymbol, playerFirst)
             # computer starts
